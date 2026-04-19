@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Details | Admin Panel</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --primary: #4338ca;
+            --accent: #2563eb;
+            --danger: #dc2626;
+            --shadow: 0 15px 40px rgba(15, 23, 42, 0.08);
+        }
+        body {
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+        }
+        header {
+            background: var(--surface);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        header nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 1.25rem;
+            font-weight: 600;
+        }
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        .detail-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-block {
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 0.85rem;
+        }
+        .label {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .value {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .pre-content {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        .analysis-block {
+            display: grid;
+            gap: 1rem;
+        }
+        .section-title {
+            margin: 0 0 0.75rem 0;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+        .badge {
+            display: inline-flex;
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-success {
+            background: #d1fae5;
+            color: #166534;
+        }
+        .badge-warning {
+            background: #fef9c3;
+            color: #92400e;
+        }
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: none;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <h1>Analysis Details</h1>
+        <nav>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/admin/user/{id}(id=${userDetails.id})}">Back to User</a>
+            <a th:href="@{/admin/logout}">Logout</a>
+        </nav>
+    </div>
+</header>
+<main>
+    <section class="card">
+        <div class="detail-row">
+            <div class="detail-block">
+                <p class="label">User</p>
+                <p class="value" th:text="${userDetails.name}"></p>
+            </div>
+            <div class="detail-block">
+                <p class="label">Analysis ID</p>
+                <p class="value" th:text="${analysis.id}"></p>
+            </div>
+            <div class="detail-block">
+                <p class="label">Status</p>
+                <p class="value" th:text="${analysis.status}"></p>
+            </div>
+            <div class="detail-block">
+                <p class="label">Score</p>
+                <p class="value" th:text="${analysis.finalScore} + '%'">0%</p>
+            </div>
+        </div>
+        <div class="analysis-block">
+            <div>
+                <p class="section-title">Resume</p>
+                <div class="pre-content" th:text="${resumeContents.get(analysis.fileName)}"></div>
+            </div>
+            <div>
+                <p class="section-title">Job Description</p>
+                <div class="pre-content" th:text="${analysis.jobDescription}"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-block">
+                    <p class="label">Keyword Match</p>
+                    <p class="value" th:text="${analysis.keywordMatchScore}"></p>
+                </div>
+                <div class="detail-block">
+                    <p class="label">Skill Match</p>
+                    <p class="value" th:text="${analysis.skillMatchScore}"></p>
+                </div>
+                <div class="detail-block">
+                    <p class="label">Completeness</p>
+                    <p class="value" th:text="${analysis.completenessScore}"></p>
+                </div>
+            </div>
+            <div>
+                <p class="section-title">Insight</p>
+                <div class="pre-content" th:text="${analysis.insight}"></div>
+            </div>
+            <div>
+                <p class="section-title">Matched Skills</p>
+                <div class="pre-content" th:text="${analysis.matchedSkills}"></div>
+            </div>
+            <div>
+                <p class="section-title">Missing Skills</p>
+                <div class="pre-content" th:text="${analysis.missingSkills}"></div>
+            </div>
+            <div>
+                <p class="section-title">Recommended Jobs</p>
+                <div class="pre-content" th:text="${analysis.recommendedJobs}"></div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

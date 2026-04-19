@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Resume Analyzer</title>
+    <style>
+        :root {
+            --bg-start: #f5efe6;
+            --bg-end: #dce8f2;
+            --card: rgba(255, 255, 255, 0.88);
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #0f766e;
+            --accent-dark: #115e59;
+            --danger: #b91c1c;
+            --success: #166534;
+            --border: rgba(15, 118, 110, 0.14);
+            --shadow: 0 24px 60px rgba(31, 41, 55, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background:
+                    radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 28%),
+                    radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 32%),
+                    linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .layout {
+            width: min(980px, 100%);
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            padding: 56px;
+            background: linear-gradient(160deg, #0f766e, #164e63);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.05;
+            margin: 0 0 16px;
+        }
+
+        .hero p {
+            margin: 0;
+            color: rgba(248, 250, 252, 0.86);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            font-size: 0.92rem;
+            letter-spacing: 0.02em;
+        }
+
+        .panel {
+            padding: 44px 38px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-card {
+            width: 100%;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+        }
+
+        .subtext {
+            margin: 0 0 28px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .alert.error {
+            background: rgba(185, 28, 28, 0.08);
+            color: var(--danger);
+        }
+
+        .alert.success {
+            background: rgba(22, 101, 52, 0.08);
+            color: var(--success);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: rgba(15, 118, 110, 0.45);
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 14px;
+            padding: 15px 18px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.03);
+        }
+
+        .footer-link {
+            margin-top: 18px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .footer-link a {
+            color: var(--accent-dark);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 820px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .hero,
+            .panel {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <section class="hero">
+        <div>
+            <span class="hero-badge">Resume Analyzer Portal</span>
+            <h1>Track resume strength with a clean, simple workflow.</h1>
+            <p>Sign in to analyze resume content, check matched skills, and review quick feedback from your dashboard.</p>
+        </div>
+        <p>Built with Spring Boot, Thymeleaf, and an embedded database for easy local setup in Spring Tool Suite.</p>
+    </section>
+
+    <section class="panel">
+        <div class="form-card">
+            <h2>Welcome back</h2>
+            <p class="subtext">Log in with your email and password to continue.</p>
+
+            <div class="alert error" th:if="${error}" th:text="${error}"></div>
+            <div class="alert success" th:if="${success}" th:text="${success}"></div>
+
+            <form th:action="@{/login}" method="post">
+                <label for="email">Email Address</label>
+                <input id="email" type="email" name="email" placeholder="name@example.com" required>
+
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" placeholder="Enter your password" required>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="footer-link">
+                New here? <a th:href="@{/register}">Create an account</a>
+                <br><br>
+                <a th:href="@{/admin/login}">Login as Administrator</a>
+            </p>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #eceff1;
+            --panel: #f7f8fa;
+            --ink: #143035;
+            --muted: #4d666d;
+            --blue: #2254d1;
+            --teal: #0b8277;
+            --green: #0a7a5f;
+            --line: #d7dde2;
+            --chip: #e8f2f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+        }
+
+        .container {
+            width: min(1200px, calc(100% - 24px));
+            margin: 14px auto 30px;
+        }
+
+        .top {
+            background: linear-gradient(115deg, #0c766f, #1f4fb7);
+            border-radius: 20px;
+            color: #f4fbff;
+            padding: 18px;
+            box-shadow: 0 10px 26px rgba(11, 64, 89, 0.2);
+        }
+
+        .top-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 42px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+
+        .welcome {
+            margin: 6px 0 0;
+            color: #dcecf6;
+            font-size: 13px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            background: rgba(245, 250, 255, 0.22);
+            color: #fff;
+            padding: 9px 14px;
+            font-weight: 700;
+            font-size: 12px;
+            text-decoration: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: rgba(245, 250, 255, 0.32);
+        }
+
+        .card-row {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .metric {
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: rgba(233, 244, 252, 0.09);
+            border: 1px solid rgba(234, 245, 253, 0.16);
+        }
+
+        .metric-title {
+            font-size: 12px;
+            color: #d4e8f5;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .layout {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .full-width-panel {
+            grid-column: 1 / -1;
+        }
+
+        .panel h2 {
+            margin: 0;
+            font-size: 30px;
+            color: #204148;
+            line-height: 1;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            color: #2a4950;
+        }
+
+        input[type="file"],
+        textarea {
+            width: 100%;
+            border: 1px solid #ccd6dc;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        textarea {
+            min-height: 78px;
+            resize: vertical;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .primary {
+            margin-top: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(120deg, #0f8679, #1d4dc8);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .error {
+            margin-top: 8px;
+            background: #fce7e8;
+            color: #9f1d24;
+            border: 1px solid #f8c7cb;
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+        .score-card {
+            background: linear-gradient(130deg, #0d7f73, #0f655e);
+            color: #f3fffb;
+        }
+
+        .status-pill {
+            display: inline-block;
+            background: rgba(245, 255, 251, 0.22);
+            border: 1px solid rgba(245, 255, 251, 0.35);
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 4px 8px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 70px;
+            font-weight: 900;
+            line-height: 0.95;
+            margin: 6px 0;
+        }
+
+        .score-sub {
+            font-size: 12px;
+            color: #d2f3ea;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .breakdown {
+            margin-top: 10px;
+        }
+
+        .break-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .break-item {
+            background: #fff;
+            border: 1px solid #dce4ea;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .break-item strong {
+            display: block;
+            font-size: 18px;
+        }
+
+        .break-item span {
+            font-size: 10px;
+            color: #607278;
+            font-weight: 700;
+        }
+
+        .bar {
+            margin-top: 6px;
+            height: 4px;
+            border-radius: 999px;
+            background: #d8e2e6;
+            overflow: hidden;
+        }
+
+        .bar > i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(120deg, #0b867a, #2456ca);
+        }
+
+        .chip-wrap {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .chip {
+            border-radius: 999px;
+            background: var(--chip);
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2f4d56;
+        }
+
+        .plain {
+            color: #607278;
+            font-size: 12px;
+            margin: 8px 0 0;
+        }
+
+        .history-item {
+            border: 1px solid #d8e1e7;
+            border-radius: 12px;
+            background: #fff;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .score-badge {
+            min-width: 46px;
+            min-height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8fbf4;
+            color: #0f7a5f;
+            font-weight: 900;
+            font-size: 12px;
+            border: 2px solid #c9f0e1;
+        }
+
+        .history-title {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .history-sub {
+            font-size: 11px;
+            color: #677a80;
+            margin-top: 4px;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .small-btn {
+            border-radius: 999px;
+            border: none;
+            padding: 7px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: #2552c9;
+            color: #fff;
+        }
+
+        .pdf-btn {
+            background: #0c8778;
+            color: #fff;
+        }
+
+        .chart-wrap {
+            margin-top: 10px;
+            height: 180px;
+        }
+
+        .history-more-wrap {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .view-more-btn {
+            display: inline-block;
+            background: #2552c9;
+            color: #fff;
+        }
+
+        @media (max-width: 1000px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .card-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .card-row {
+                grid-template-columns: 1fr;
+            }
+
+            .two-col,
+            .break-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <section class="top">
+        <div class="top-head">
+            <div>
+                <h1>Resume Analyzer Pro</h1>
+                <p class="welcome"
+                   th:text="'Welcome, ' + ${user.name} + '. This dashboard combines ATS analysis, role recommendations, saved history, and visual progress tracking.'">
+                </p>
+            </div>
+            <div class="top-actions">
+                <button class="btn" type="button" onclick="alert('Resume Builder UI coming soon!')">Open Resume Builder</button>
+                <a class="btn" th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+
+        <div class="card-row">
+            <article class="metric">
+                <div class="metric-title">Total Analyses</div>
+                <div class="metric-value" th:text="${totalAnalyses}">0</div>
+            </article>
+            <article class="metric">
+                <div class="metric-title">Latest Score</div>
+                <div class="metric-value" th:text="${latestScore + '%'}">0%</div>
+            </article>
+            <article class="metric">
+                <div class="metric-title">Status</div>
+                <div class="metric-value" style="font-size:30px;" th:text="${latestStatus}">No Analysis Yet</div>
+            </article>
+            <article class="metric">
+                <div class="metric-title">Recommended Jobs</div>
+                <div class="metric-value" th:text="${recommendedJobsCount}">0</div>
+            </article>
+        </div>
+    </section>
+
+    <section class="layout">
+        <div>
+            <article class="panel">
+                <h2>Upload & Match</h2>
+                <p class="sub">Upload a resume file or paste content, compare against a job description, and save this run.</p>
+
+                <form th:action="@{/analyze}" method="post" enctype="multipart/form-data">
+                    <div class="two-col">
+                        <div>
+                            <label class="label">Resume File</label>
+                            <input type="file" name="file" accept=".pdf,.doc,.docx,.txt">
+                        </div>
+                        <div>
+                            <label class="label">Paste Resume Content</label>
+                            <textarea name="resumeContent" placeholder="Paste resume text here if you do not want to upload a file." th:text="${resumeText}"></textarea>
+                        </div>
+                    </div>
+
+                    <label class="label">Job Description</label>
+                    <textarea name="jobDesc" placeholder="Paste the target job description here..." th:text="${jobDesc}"></textarea>
+
+                    <button class="primary" type="submit">Analyze Eligibility Match</button>
+
+                    <div class="error" th:if="${error != null}" th:text="${error}"></div>
+                </form>
+            </article>
+
+            <article class="panel" style="margin-top: 10px;">
+                <h2 style="font-size: 28px;">Analytics Snapshot</h2>
+                <p class="sub">A highlighted graph showing your latest score progression.</p>
+                <div class="chart-wrap">
+                    <canvas id="analyticsChart"></canvas>
+                </div>
+            </article>
+        </div>
+
+        <div>
+            <article class="panel score-card">
+                <div class="status-pill" th:text="${activeAnalysis != null ? activeAnalysis.status : 'No Analysis Yet'}">No Analysis Yet</div>
+                <div class="score-value" th:text="${activeAnalysis != null ? activeAnalysis.finalScore : 0} + '%'">0%</div>
+                <p class="score-sub">Final Score based on keyword match, tracked skills, and resume completeness.</p>
+            </article>
+
+            <article class="panel breakdown">
+                <h2 style="font-size: 26px;">Score Breakdown</h2>
+                <p class="sub">Latest run is summarized into core ATS-style indicators.</p>
+                <div class="break-grid">
+                    <div class="break-item">
+                        <strong th:text="${activeAnalysis != null ? activeAnalysis.keywordMatchScore : 0} + '%'">0%</strong>
+                        <span>Keyword Match</span>
+                        <div class="bar"><i th:style="${'width:' + (activeAnalysis != null ? activeAnalysis.keywordMatchScore : 0) + '%'}"></i></div>
+                    </div>
+                    <div class="break-item">
+                        <strong th:text="${activeAnalysis != null ? activeAnalysis.skillMatchScore : 0} + '%'">0%</strong>
+                        <span>Tracked Skills</span>
+                        <div class="bar"><i th:style="${'width:' + (activeAnalysis != null ? activeAnalysis.skillMatchScore : 0) + '%'}"></i></div>
+                    </div>
+                    <div class="break-item">
+                        <strong th:text="${activeAnalysis != null ? activeAnalysis.completenessScore : 0} + '%'">0%</strong>
+                        <span>Completeness</span>
+                        <div class="bar"><i th:style="${'width:' + (activeAnalysis != null ? activeAnalysis.completenessScore : 0) + '%'}"></i></div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel" style="margin-top: 10px;">
+                <h2 style="font-size: 26px;">Matched Keywords</h2>
+                <div class="chip-wrap" th:if="${activeAnalysis != null && !#lists.isEmpty(activeAnalysis.matchedSkills)}">
+                    <span class="chip" th:each="skill : ${activeAnalysis.matchedSkills}" th:text="${skill}"></span>
+                </div>
+                <p class="plain" th:if="${activeAnalysis == null || #lists.isEmpty(activeAnalysis.matchedSkills)}">No matched keywords yet.</p>
+            </article>
+
+            <article class="panel" style="margin-top: 10px;">
+                <h2 style="font-size: 26px;">Missing Keywords</h2>
+                <div class="chip-wrap" th:if="${activeAnalysis != null && !#lists.isEmpty(activeAnalysis.missingSkills)}">
+                    <span class="chip" th:each="skill : ${activeAnalysis.missingSkills}" th:text="${skill}"></span>
+                </div>
+                <p class="plain" th:if="${activeAnalysis == null || #lists.isEmpty(activeAnalysis.missingSkills)}">No major missing keywords detected.</p>
+            </article>
+
+            <article class="panel" style="margin-top: 10px;">
+                <h2 style="font-size: 26px;">Recommended Jobs</h2>
+                <div class="chip-wrap" th:if="${activeAnalysis != null && !#lists.isEmpty(activeAnalysis.recommendedJobs)}">
+                    <span class="chip" th:each="job : ${activeAnalysis.recommendedJobs}" th:text="${job}"></span>
+                </div>
+                <p class="plain" th:if="${activeAnalysis == null || #lists.isEmpty(activeAnalysis.recommendedJobs)}">No role recommendation yet.</p>
+            </article>
+        </div>
+
+        <article class="panel full-width-panel">
+            <h2 style="font-size: 28px;">Saved Resume History</h2>
+            <p class="sub">Open any saved analysis, view full breakdown, or export it as a PDF.</p>
+
+            <p class="plain" th:if="${history == null || #lists.isEmpty(history)}">No analyses saved yet.</p>
+
+            <div th:if="${history != null && !#lists.isEmpty(history)}">
+                <div id="historyList">
+                    <div class="history-item" th:each="item : ${history}">
+                        <div class="score-badge" th:text="${item.finalScore + '%'}">0%</div>
+                        <div>
+                            <div class="history-title" th:text="${item.status}">Status</div>
+                            <p><b>File:</b> <span th:text="${item.fileName}"></span></p>
+                            <p><b>Insight:</b> <span th:text="${item.insight}"></span></p>
+                            <div class="history-sub"
+                                 th:text="${#temporals.format(item.createdAt, 'dd MMM yyyy, hh:mm a')}">Date</div>
+                        </div>
+                        <div class="history-actions">
+                            <a class="small-btn view-btn" th:href="@{|/analysis/${item.id}/view|}">View</a>
+                            <a class="small-btn pdf-btn" th:href="@{|/analysis/${item.id}/pdf|}">PDF</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-more-wrap" th:if="${historyHasMore}">
+                    <button id="viewMoreBtn"
+                            class="small-btn view-more-btn"
+                            type="button"
+                            th:attr="data-loaded-count=${historyLoadedCount}">
+                        View More
+                    </button>
+                </div>
+            </div>
+        </article>
+    </section>
+</div>
+
+<script th:inline="javascript">
+    const labels = /*[[${graphLabels}]]*/ [];
+    const scores = /*[[${graphScores}]]*/ [];
+
+    const canvas = document.getElementById('analyticsChart');
+    if (canvas) {
+        new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Score',
+                    data: scores,
+                    borderColor: '#2552c9',
+                    backgroundColor: 'rgba(37, 82, 201, 0.15)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#0f8679',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    function escapeHtml(value) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return String(value ?? '').replace(/[&<>"']/g, function(ch) {
+            return map[ch];
+        });
+    }
+
+    function buildHistoryItemHtml(item) {
+        const fileName = escapeHtml(item.fileName || '');
+        const insight = escapeHtml(item.insight || '');
+        const status = escapeHtml(item.status || '');
+        const createdAt = escapeHtml(item.createdAt || '');
+
+        return `
+            <div class="history-item">
+                <div class="score-badge">${item.finalScore}%</div>
+                <div>
+                    <div class="history-title">${status}</div>
+                    <p><b>File:</b> <span>${fileName}</span></p>
+                    <p><b>Insight:</b> <span>${insight}</span></p>
+                    <div class="history-sub">${createdAt}</div>
+                </div>
+                <div class="history-actions">
+                    <a class="small-btn view-btn" href="/analysis/${item.id}/view">View</a>
+                    <a class="small-btn pdf-btn" href="/analysis/${item.id}/pdf">PDF</a>
+                </div>
+            </div>
+        `;
+    }
+
+    const viewMoreBtn = document.getElementById('viewMoreBtn');
+    const historyList = document.getElementById('historyList');
+    if (viewMoreBtn && historyList) {
+        viewMoreBtn.addEventListener('click', async function() {
+            const currentOffset = Number(viewMoreBtn.dataset.loadedCount || '0');
+            viewMoreBtn.disabled = true;
+            viewMoreBtn.textContent = 'Loading...';
+
+            try {
+                const response = await fetch(`/history/more?offset=${currentOffset}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load history');
+                }
+
+                const payload = await response.json();
+                const items = Array.isArray(payload.items) ? payload.items : [];
+
+                items.forEach(function(item) {
+                    historyList.insertAdjacentHTML('beforeend', buildHistoryItemHtml(item));
+                });
+
+                viewMoreBtn.dataset.loadedCount = String(payload.loadedCount ?? currentOffset);
+
+                if (!payload.hasMore || items.length === 0) {
+                    viewMoreBtn.style.display = 'none';
+                } else {
+                    viewMoreBtn.disabled = false;
+                    viewMoreBtn.textContent = 'View More';
+                }
+            } catch (error) {
+                viewMoreBtn.disabled = false;
+                viewMoreBtn.textContent = 'View More';
+            }
+        });
+    }
+</script>
+</body>
+</html>

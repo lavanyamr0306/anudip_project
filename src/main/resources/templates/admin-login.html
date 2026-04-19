@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Resume Analyzer</title>
+    <style>
+        :root {
+            --bg-start: #2d3748;
+            --bg-end: #1a202c;
+            --card: rgba(255, 255, 255, 0.95);
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #805ad5;
+            --accent-dark: #6b46c1;
+            --danger: #b91c1c;
+            --success: #166534;
+            --border: rgba(128, 90, 213, 0.14);
+            --shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at top left, rgba(128, 90, 213, 0.18), transparent 28%),
+                        radial-gradient(circle at bottom right, rgba(49, 130, 206, 0.16), transparent 32%),
+                        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            display: grid; place-items: center; padding: 24px;
+        }
+
+        .layout {
+            width: min(980px, 100%);
+            display: grid; grid-template-columns: 1.1fr 0.9fr;
+            background: var(--card); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 28px; overflow: hidden; box-shadow: var(--shadow);
+        }
+
+        .hero {
+            padding: 56px;
+            background: linear-gradient(160deg, #4c51bf, #2b6cb0);
+            color: #f8fafc; display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .hero h1 { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.05; margin: 0 0 16px; }
+        .hero p { margin: 0; color: rgba(248, 250, 252, 0.86); font-size: 1rem; line-height: 1.7; }
+        .hero-badge {
+            display: inline-block; padding: 10px 16px; border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.22);
+            font-size: 0.92rem; letter-spacing: 0.02em; margin-bottom: 20px;
+        }
+
+        .panel { padding: 44px 38px; display: flex; align-items: center; }
+        .form-card { width: 100%; }
+        h2 { margin: 0 0 10px; font-size: 2rem; }
+        .subtext { margin: 0 0 28px; color: var(--muted); line-height: 1.6; }
+        
+        .alert { padding: 12px 14px; border-radius: 14px; margin-bottom: 16px; font-size: 0.95rem; }
+        .alert.error { background: rgba(185, 28, 28, 0.08); color: var(--danger); }
+        
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        input {
+            width: 100%; padding: 14px 16px; margin-bottom: 18px;
+            border: 1px solid var(--border); border-radius: 14px; background: rgba(255, 255, 255, 0.95);
+            font-size: 1rem; outline: none;
+        }
+        input:focus {
+            border-color: rgba(128, 90, 213, 0.45);
+            box-shadow: 0 0 0 4px rgba(128, 90, 213, 0.12);
+        }
+
+        button {
+            width: 100%; border: 0; border-radius: 14px; padding: 15px 18px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+        }
+        button:hover { filter: brightness(1.03); }
+
+        .footer-link { margin-top: 18px; text-align: center; color: var(--muted); }
+        .footer-link a { color: var(--accent-dark); text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 820px) {
+            .layout { grid-template-columns: 1fr; }
+            .hero, .panel { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <section class="hero">
+        <div>
+            <span class="hero-badge">Admin Portal</span>
+            <h1>Manage Resume Analyzer Ecosystem</h1>
+            <p>Sign in with your administrative credentials to oversee users, delete accounts, and view all global analyses.</p>
+        </div>
+        <p>Restricted Access - Administrators Only.</p>
+    </section>
+
+    <section class="panel">
+        <div class="form-card">
+            <h2>Admin Login</h2>
+            <p class="subtext">Enter your administrator email and password.</p>
+
+            <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+            <form th:action="@{/admin/login}" method="post">
+                <label for="email">Email Address</label>
+                <input id="email" type="email" name="email" placeholder="admin@admin.com" required>
+
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" placeholder="Enter your password" required>
+
+                <button type="submit">Admin Login</button>
+            </form>
+
+            <p class="footer-link">
+                Not an admin? <a th:href="@{/login}">User Login</a>
+                <br>
+                Or <a th:href="@{/register}">Register an admin account</a> with email <strong>admin@admin.com</strong>.
+            </p>
+        </div>
+    </section>
+</div>
+</body>
+</html>

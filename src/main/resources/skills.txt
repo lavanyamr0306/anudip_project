@@ -1,0 +1,57 @@
+java
+python
+c
+c++
+javascript
+typescript
+spring
+spring boot
+hibernate
+mysql
+sql
+oracle
+mongodb
+html
+css
+react
+angular
+node.js
+express
+machine learning
+deep learning
+data analysis
+data science
+pandas
+numpy
+scikit-learn
+tensorflow
+rest api
+microservices
+api development
+docker
+kubernetes
+git
+github
+gitlab
+linux
+unix
+aws
+azure
+google cloud
+oop
+object oriented programming
+dbms
+operating systems
+computer networks
+nlp
+natural language processing
+power bi
+tableau
+excel
+android
+flutter
+cybersecurity
+network security
+data visualization
+flask
+django
