@@ -1,0 +1,41 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Resume Analyzer Pro Documentation</title>
+</head>
+<body>
+<h1>Resume Analyzer Pro</h1>
+<p><b>Project Type:</b> Spring Boot web application for resume analysis and job-fit scoring.</p>
+<p><b>Technology Stack:</b> Java 17, Spring Boot, Spring MVC, Spring Data JPA, Thymeleaf, H2, MySQL, Maven, Apache Tika, iText PDF.</p>
+
+<h2>Modules</h2>
+<p>1. User registration and login</p>
+<p>2. Admin login and dashboard</p>
+<p>3. Resume upload or pasted-text analysis</p>
+<p>4. Keyword match, skill match, completeness score, and final score</p>
+<p>5. Analysis history with downloadable PDF report</p>
+
+<h2>How To Run</h2>
+<p>1. Open the project in the project root.</p>
+<p>2. Run <b>mvn clean package</b> to generate the jar file.</p>
+<p>3. Run <b>java -jar target\resumeanalyzer-0.0.1-SNAPSHOT.jar</b>.</p>
+<p>4. Open <b>http://localhost:9043</b> in the browser.</p>
+
+<h2>Database</h2>
+<p>The project now starts with the H2 in-memory database by default, so it can run without manual MySQL setup.</p>
+<p>If MySQL is required, start the application with the <b>mysql</b> profile and provide <b>MYSQL_URL</b>, <b>MYSQL_USERNAME</b>, and <b>MYSQL_PASSWORD</b>.</p>
+
+<h2>SQL File</h2>
+<p>The database schema script is available in the <b>sqlfile</b> folder as <b>resumeanalyser_schema.sql</b>.</p>
+
+<h2>Main Features</h2>
+<p>1. Extracts text from uploaded resume files using Apache Tika</p>
+<p>2. Tracks matched and missing skills against a job description</p>
+<p>3. Recommends job roles based on detected skills</p>
+<p>4. Stores user, resume, and analysis history in the database</p>
+<p>5. Generates a downloadable PDF analysis report</p>
+
+<h2>Project Output</h2>
+<p>The final submission includes the source code, documentation file, SQL schema file, and generated executable jar file.</p>
+</body>
+</html>
